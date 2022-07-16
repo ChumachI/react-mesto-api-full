@@ -50,12 +50,9 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.getOneUser = (req, res, next) => {
   User.findById(req.params.userId)
+    .orFail(new NotFoundError('Пользователь по указанному _id не найден.'))
     .then((data) => {
-      if (data === null) {
-        throw new NotFoundError('Пользователь по указанному _id не найден.');
-      } else {
-        res.status(STATUS_OK).send({ data });
-      }
+      res.status(STATUS_OK).send({ data });
     })
     .catch(next);
 };
@@ -65,12 +62,9 @@ module.exports.updateMyInfo = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
+    .orFail(new NotFoundError('Пользователь по указанному _id не найден.'))
     .then((data) => {
-      if (data === null) {
-        throw new NotFoundError('Пользователь по указанному _id не найден.');
-      } else {
-        res.status(STATUS_OK).send({ data });
-      }
+      res.status(STATUS_OK).send({ data });
     })
     .catch(next);
 };
@@ -79,12 +73,9 @@ module.exports.updateMyAvatar = (req, res, next) => {
   const userId = req.user._id;
   const { avatar } = req.body;
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
+    .orFail(new NotFoundError('Пользователь по указанному _id не найден.'))
     .then((data) => {
-      if (data === null) {
-        throw new NotFoundError('Пользователь с указанным _id не найден.');
-      } else {
-        res.status(STATUS_OK).send({ data });
-      }
+      res.status(STATUS_OK).send({ data });
     })
     .catch(next);
 };

@@ -29,10 +29,9 @@ module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
   Card.findByIdAndRemove(cardId)
+    .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
     .then((card) => {
-      if (card === null) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
-      } else if (JSON.stringify(userId) !== JSON.stringify(card.owner._id)) {
+      if (JSON.stringify(userId) !== JSON.stringify(card.owner._id)) {
         throw new ForbiddenError('Недостаточно прав для удаления карточки');
       } else {
         res.status(STATUS_OK).send({ data: card });
@@ -48,12 +47,9 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
     .then((card) => {
-      if (card === null) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
-      } else {
-        res.status(STATUS_OK).send({ data: card });
-      }
+      res.status(STATUS_OK).send({ data: card });
     })
     .catch(next);
 };
@@ -65,12 +61,9 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
     .then((card) => {
-      if (card === null) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
-      } else {
-        res.status(STATUS_OK).send({ data: card });
-      }
+      res.status(STATUS_OK).send({ data: card });
     })
     .catch(next);
 };
